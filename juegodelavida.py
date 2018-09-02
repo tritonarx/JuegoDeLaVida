@@ -1,8 +1,12 @@
 def JuegoDeLaVida():
 	import time
+	import curses
+	stdscr = curses.initscr();
+	
+	stdscr.addstr("\n Para comenzar ingrese 'b' (Begin) | para finalizar ingrese 'q' (Exit)\n  =>");
 
-	cm,fm,ptp=42,42,1600
 
+	cm,fm,ptp=27,27,625
 
 	tiempo=0.025
 
@@ -10,12 +14,11 @@ def JuegoDeLaVida():
 	m1=[[0 for x in range(cm)] for y in range(fm)]
 	m2=[[0 for x in range(cm)] for y in range(fm)]
 
-
 	#carga datos en forma x,y\r\r\n
 	#datos.txt,honeythieves.txt,pinwheel.txt,quadrupleburloaferimeter2.txt
 
 	def load_data():
-		datos=open('/media/thor/AC11-7B29/quadrupleburloaferimeter2.txt','r')
+		datos=open('/media/thor/AC11-7B29/sim/quadrupleburloaferimeter2.txt','r')
 		for line in datos:
 			line=line.strip()
 			line=line.split(',')
@@ -63,53 +66,68 @@ def JuegoDeLaVida():
 		i=0
 		op=0
 		ops=0
-		while True:
+		running=True
+		while running:
+			key = stdscr.getch()
+			if (chr(key) == "q"):
+				running = False
+			if (chr(key) == "b"):
+				curses.noecho()
+				stdscr.addstr("\n Welcome to JuegoDeLaVida")
 
-			ciclo_de_vida() 
 
-			time.sleep(tiempo)	
-			op=0
-			ops=0
-			a='N ciclo ['+str(i)+']\r\r\n'	
+				ciclo_de_vida() 
 
-			for x in range(1,cm*2-2,1):
-				a+='_'
+				time.sleep(tiempo)	
+				op=0
+				ops=0
+				a='N ciclo ['+str(i)+']\r\r\n'	
 
-			a+='\r\r\n'
-			for x in range(1,cm-1,1):
-				a+='|'
-				for y in range(1,fm-1,1):
-					# Compara punto a punto si cambio la matriz
-					if m1[x][y]==m2[x][y]:
-						op=op+1
-					if m0[x][y]==m2[x][y]:
-						ops=ops+1
+				for x in range(1,cm*2-2,1):
+					a+='_'
 
-					m0[x][y]=m1[x][y]
-					m1[x][y]=m2[x][y]
-					# Visualiza los resultados en un string
-					if m1[x][y]==1:
-						a+='&)'
-					if m1[x][y]==0:
-						a+='  '
+				a+='\r\r\n'
+				for x in range(1,cm-1,1):
+					a+='|'
+					for y in range(1,fm-1,1):
+						# Compara punto a punto si cambio la matriz
+						if m1[x][y]==m2[x][y]:
+							op=op+1
+						if m0[x][y]==m2[x][y]:
+							ops=ops+1
+
+						m0[x][y]=m1[x][y]
+						m1[x][y]=m2[x][y]
+						# Visualiza los resultados en un string
+						if m1[x][y]==1:
+							a+='&)'
+						if m1[x][y]==0:
+							a+='  '
 					
-				a+='|\r\r\n'
-			for x in range(1,cm*2-2,1):
-				a+='_'
-			a+='\r\r\n----'+' N '+str(i-1)+' ---> N '+str(i)+'  Cambios = '+str(ptp-op)+' -----\r\r\n'
-			if ptp==op:
+					a+='|\r\r\n'
+				for x in range(1,cm*2-2,1):
+					a+='_'
+				a+='\r\r\n----'+' N '+str(i-1)+' ---> N '+str(i)+'  Cambios = '+str(ptp-op)+' -----\r\r\n'
+				if ptp==op:
 				
-				a+= '--------------FIN------------------'+str(ptp-op)
-				# Verifica que al aplicar las reglas
-				# cambie, en caso contrario termina el proceso
-				break
-			if ptp==ops:
-				a=''
-				print '-------FIN----BUCLE OSCILANTE------'+str(ptp-ops)
-				break
+					a+= '--------------FIN------------------'+str(ptp-op)
+					# Verifica que al aplicar las reglas
+					# cambie, en caso contrario termina el proceso
+					break
+				if ptp==ops:
+					a=''
+					print '-------FIN----BUCLE OSCILANTE------'+str(ptp-ops)
+					break
 
-			print a
-			i=i+1
+				print a
+				i=i+1
+			else:
+				stdscr.addstr("\n Para comenzar ingrese 'b' (Begin) | para finalizar ingrese 'q' (Exit)\n  =>");
+		curses.nocbreak()
+		stdscr.keypad (0)
+		curses.echo()
+		curses.endwin()
+		return 0
 
 	#############################################################
 	#															#
